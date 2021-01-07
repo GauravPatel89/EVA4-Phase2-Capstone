@@ -1,0 +1,35 @@
+
+service: gp-eva-capstone-project
+
+provider:
+  name: aws
+  runtime: python3.8
+  stage: dev
+  region: ap-south-1
+  timeout: 60
+  environment:
+    S3_BUCKET: gauravp-eva4-capstone-bucket
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - "*"
+      Resource: arn:aws:s3:::gauravp-eva4-capstone-bucket/*
+    
+    - Action:
+        - "*"
+      Effect: Allow
+      Resource: "*"
+  
+
+  
+functions:
+  hello:
+    handler: handler.hello
+    memorySize: 1024
+    timeout: 60
+    events:
+      - http:
+          path: hello
+          method: post
+          cors: true
+    
