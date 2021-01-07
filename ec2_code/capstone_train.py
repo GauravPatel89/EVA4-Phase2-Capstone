@@ -26,7 +26,7 @@ def list_folders(s3_client, bucket_name):
 
 # Find number of users
 
-s3 = boto3.client('s3',aws_access_key_id='AKIAXKQTI4SG4YOY6LGI',aws_secret_access_key='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')
+s3 = boto3.client('s3',aws_access_key_id='***aws_access_key_id****',aws_secret_access_key='***aws_secret_access_key***')
 folder_list = list_folders(s3, 'gauravp-eva4-capstone-bucket')
 
 print(f'Found users:{folder_list} ')
