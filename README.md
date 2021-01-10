@@ -106,6 +106,15 @@ i. Input the text for classification and press "Infer" button. This will trigger
  <img width="800" height="400" src="https://github.com/GauravPatel89/EVA4-Phase2-Capstone/blob/main/Figures/text_inference_1.png">
 </p>
 
+### Project Flow
+
+<p align="center">
+ <img width="800" height="400" src="https://github.com/GauravPatel89/EVA4-Phase2-Capstone/blob/main/Figures/training_flow.png">
+</p>
+
+<p align="center">
+ <img width="800" height="400" src="https://github.com/GauravPatel89/EVA4-Phase2-Capstone/blob/main/Figures/inference_flow.png">
+</p>
 ### CodeBase
 
 #### Directories
