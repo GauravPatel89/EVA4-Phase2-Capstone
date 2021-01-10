@@ -8,6 +8,9 @@ Develop a [lobe.ai](https://lobe.ai/) clone:
 - plug-in a model of your choice
 - train the model on AWS EC2, use lambda to preprocess, trigger EC2 and match user id with the files stored on EC2
 - move the model to lambda and show inferencing
+
+### [Click To Visit Website](http://gauravp-eva4-capstone-website.s3-website.ap-south-1.amazonaws.com/)
+
 ### [Submission:](http://gauravp-eva4-capstone-website.s3-website.ap-south-1.amazonaws.com/)
 Click below image to head over to Final Submission Website.
 [![Capstone Final Submission](https://github.com/GauravPatel89/EVA4-Phase2-Capstone/blob/main/Figures/project_website_front.png)](http://gauravp-eva4-capstone-website.s3-website.ap-south-1.amazonaws.com/)
