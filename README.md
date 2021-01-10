@@ -107,12 +107,12 @@ i. Input the text for classification and press "Infer" button. This will trigger
 </p>
 
 ### Project Flow
-1. 'Training Flow'
+1. Training Flow
 <p align="center">
  <img width="800" height="400" src="https://github.com/GauravPatel89/EVA4-Phase2-Capstone/blob/main/Figures/training_flow.png">
 </p>
 
-2. 'Inference Flow'
+2. Inference Flow
 
 <p align="center">
  <img width="800" height="400" src="https://github.com/GauravPatel89/EVA4-Phase2-Capstone/blob/main/Figures/inference_flow.png">
