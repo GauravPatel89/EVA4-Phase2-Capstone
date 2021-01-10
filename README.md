@@ -96,7 +96,7 @@ i. Input User name, project name
 ii. Press "Fetch User Info" button. This will trigger a lambda and pass Username and Projectname. Lambda will check whether model corresponding to Username and Projectname exists and reverts back. The website will fill up fields like "Number of Classes" and all the class names.
 
 <p align="center">
- <img width="800" height="400" src="https://github.com/GauravPatel89/EVA4-Phase2-Capstone/blob/main/Figures/text_fetch_user_2.png">
+ <img width="1000" height="400" src="https://github.com/GauravPatel89/EVA4-Phase2-Capstone/blob/main/Figures/text_fetch_user_2.png">
 </p>
 
 ##### c. Inference
