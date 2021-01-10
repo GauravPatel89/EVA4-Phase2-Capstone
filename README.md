@@ -15,7 +15,92 @@ Click below image to head over to Final Submission Website.
 ### How to use above website?
 There are two operation modes
 
-#### 1. Image Classification
+#### 1. Image Classification  
+In this mode User can train a model for Image classification.
+
+There are 3 options provided to users. 
+
+- Train 
+- Fetch Details 
+- Inference
+
+##### a. Train
+i. Input User name, project name and  Number of classes. As soon as user inputs number of classes, as many number of class name fields and file upload buttons will show up.
+
+<p align="center">
+ <img width="800" height="400" src="https://github.com/GauravPatel89/EVA4-Phase2-Capstone/blob/main/Figures/image_training_1.png">
+</p>
+     
+ii. Enter class names for each of the class fields and select training files for each class files. Press "Train" button. This will trigger a lambda and pass uploaded files to it. Lambda will in turn upload the files in proper directory structure to AWS S3 and start EC2 instance. 
+
+<p align="center">
+ <img width="800" height="400" src="https://github.com/GauravPatel89/EVA4-Phase2-Capstone/blob/main/Figures/image_training_2.png">
+</p>
+
+##### b. Fetch Details
+i. Input User name, project name
+
+<p align="center">
+ <img width="800" height="400" src="https://github.com/GauravPatel89/EVA4-Phase2-Capstone/blob/main/Figures/image_fetch_user_1.png">
+</p>
+     
+ii. Press "Fetch User Info" button. This will trigger a lambda and pass Username and Projectname. Lambda will check whether model corresponding to Username and Projectname exists and reverts back. The website will fill up fields like "Number of Classes" and all the class names.
+
+<p align="center">
+ <img width="800" height="400" src="https://github.com/GauravPatel89/EVA4-Phase2-Capstone/blob/main/Figures/image_fetch_user_2.png">
+</p>
+
+##### c. Inference
+i. Upload Image file for classification and press "Infer" button. This will trigger a Lambda pass uploaded file as well as Username and Projectname to it. Lambda will fetch the relevant model from S3 and perform inference for uploaded file.    
+
+<p align="center">
+ <img width="800" height="400" src="https://github.com/GauravPatel89/EVA4-Phase2-Capstone/blob/main/Figures/image_inference_1.png">
+</p>
+     
+
+
+#### 1. Text Classification  
+In this mode User can train a model for Text classification.
+
+There are 3 options provided to users. 
+
+- Train 
+- Fetch Details 
+- Inference
+
+##### a. Train
+i. Input User name, project name and  Number of classes(max 3 classes). As soon as user inputs number of classes, as many number of class name fields and file upload buttons will show up.
+
+<p align="center">
+ <img width="800" height="400" src="https://github.com/GauravPatel89/EVA4-Phase2-Capstone/blob/main/Figures/text_training_1.png">
+</p>
+     
+ii. Enter class names for each of the class fields and select training files for each class. Press "Train" button. This will trigger a lambda and pass uploaded files to it. Lambda will in turn upload the files in proper directory structure to AWS S3 and start EC2 instance. 
+
+<p align="center">
+ <img width="800" height="400" src="https://github.com/GauravPatel89/EVA4-Phase2-Capstone/blob/main/Figures/text_training_2.png">
+</p>
+
+##### b. Fetch Details
+i. Input User name, project name
+
+<p align="center">
+ <img width="800" height="400" src="https://github.com/GauravPatel89/EVA4-Phase2-Capstone/blob/main/Figures/text_fetch_user_1.png">
+</p>
+     
+ii. Press "Fetch User Info" button. This will trigger a lambda and pass Username and Projectname. Lambda will check whether model corresponding to Username and Projectname exists and reverts back. The website will fill up fields like "Number of Classes" and all the class names.
+
+<p align="center">
+ <img width="800" height="400" src="https://github.com/GauravPatel89/EVA4-Phase2-Capstone/blob/main/Figures/text_fetch_user_2.png">
+</p>
+
+##### c. Inference
+i. Input the text for classification and press "Infer" button. This will trigger a Lambda pass text, Username and Projectname to it. Lambda will fetch the relevant model from S3 and perform inference for Input text.    
+
+<p align="center">
+ <img width="800" height="400" src="https://github.com/GauravPatel89/EVA4-Phase2-Capstone/blob/main/Figures/text_inference_1.png">
+</p>
+
 ### CodeBase
 
 #### Files:
