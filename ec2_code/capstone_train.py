@@ -80,4 +80,4 @@ elif projectType == 'text':
 
 # Delete config file so that training doesn't run on the same session
 print(f'Deleting file {config_file_key} from s3')
-#s3.delete_object(Bucket=S3_BUCKET_INPUT,Key=config_file_key)
+s3.delete_object(Bucket=S3_BUCKET_INPUT,Key=config_file_key)
