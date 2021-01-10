@@ -120,4 +120,14 @@ This lamda does the inference work for Image Classification mode. It is triggere
 - ["gp-eva-capstone-text-inference"](https://github.com/GauravPatel89/EVA4-Phase2-Capstone/tree/main/deployment/gp-eva-capstone-text-inference)
 This lamda does the inference work for Text Classification mode. It is triggered by the website when user wants to perform inference on some text. Based on the Username and Projectname it fetches the relevant model from S3 and performs inference for user input text on the loaded model.
 
-2. 'images':  
+2. 'ec2_code':  
+This directory contains code files working on EC2 instance. There are 3 important files.
+- ["capstone_train.py"](https://github.com/GauravPatel89/EVA4-Phase2-Capstone/blob/main/ec2_code/capstone_train.py)
+This file is run on EC2 startup. It reads the 'config.json' to fetch the Username,Projectname and ProjectType (image or text). With this information, it will download all the training files to local directory. Finally based on Project Type it will either call relevant training function.
+
+- ["project_image_train.py"](https://github.com/GauravPatel89/EVA4-Phase2-Capstone/blob/main/ec2_code/project_image_train.py)
+This file has code for training Image model. It is called from 'capstone_train.py' with Username and Projectname. It figures out dataset path with this information and performs training on Pretrained Mobilenet V2 model. Finally it uploads the trained model to S3.
+
+- ["project_text_train.py"](https://github.com/GauravPatel89/EVA4-Phase2-Capstone/blob/main/ec2_code/project_text_train.py)
+This file has code for training Text model. It is called from 'capstone_train.py' with Username and Projectname. It figures out dataset path with this information and performs training on an LSTM bsed model. Finally it uploads the trained model to S3.
+
