@@ -3,67 +3,68 @@ try:
 except ImportError:
     pass
 
-import torch
-import torchvision
-import torchvision.transforms as transforms
-from PIL import Image
-
+import json
 import boto3
 import os
 import tarfile
 import io
 import base64
-import json
-
 from requests_toolbelt.multipart import decoder
 
-print('Import End....')
+from torchtext import data
+import torch
+import spacy
+import pickle
 
+print('Import End....')
+device = "cpu"
 
 S3_MODEL_BUCKET = os.environ['S3_MODEL_BUCKET'] if 'S3_MODEL_BUCKET' in os.environ else 'gauravp-eva4-capstone-models'
 s3 = boto3.client('s3')
 
-def transform_image(image_bytes):
-    try:
-        print('transform_image: start')
-        transformations = transforms.Compose([
-            transforms.Resize(255),
-            transforms.CenterCrop(224),
-            transforms.ToTensor(),
-            transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])])
-        image = Image.open(io.BytesIO(image_bytes))
-        print('transform_image: Image opened')
-        return transformations(image).unsqueeze(0)
-    except Exception as e:
-        print('transform_image: start',repr(e))
-        raise(e)
+nlp = spacy.load('/tmp/pkgs-from-layer/en_core_web_sm/en_core_web_sm-2.2.5')
 
+def classify_text(input_text,model,tokenizer):
 
-def get_prediction(model,image_bytes):
-    print('get_prediction: start')
-    tensor = transform_image(image_bytes=image_bytes)
-    #print('Prediction: ',tensor)
-    return model(tensor).argmax().item()
+    # tokenize the text
+    tokenized = [tok.text for tok in nlp.tokenizer(input_text)]
+    # convert to integer sequence using predefined tokenizer dictionary
+    indexed = [tokenizer[t] for t in tokenized]
+    # compute no. of words
+    length = [len(indexed)]
+    # convert to tensor
+    tensor = torch.LongTensor(indexed).to(device)
+    # reshape in form of batch, no. of words
+    tensor = tensor.unsqueeze(1).T
+    # convert to tensor
+    length_tensor = torch.LongTensor(length)
+    # Get the model prediction
+    prediction = model(tensor, length_tensor)
+
+    _, pred = torch.max(prediction, 1)
+
+    return pred.item()
 
 
 def infer(event, context):
     try:
 
-        print('start')
-        content_type_header = event['headers']['content-type']
-        #print('content_type_header',content_type_header)
-        body = base64.b64decode(event["body"])
-        print('Body loaded')
+        print(event['body'])
+        bodyTemp = event["body"]
+        print("Body Loaded")
+    
+        body = json.loads(bodyTemp)
+        print(body,type(body))
+        input_text = body["text"]
+        print(input_text)
+        print(type(input_text))
 
-        
-        userName = decoder.MultipartDecoder(body, content_type_header).parts[0].content.decode("utf-8")
+        userName = body["userName"]
         print("Username:",userName)
 
-        projectName = decoder.MultipartDecoder(body, content_type_header).parts[1].content.decode("utf-8")
+        projectName = body["projectName"]
         print("Project Name:",projectName)
 
-        picture = decoder.MultipartDecoder(body, content_type_header).parts[2].content
-        print("Picture obtained.")
 
         # Check if model file and userProject files exist then only proceed with inference
         
@@ -71,8 +72,10 @@ def infer(event, context):
         print('Getting File list from ',S3_MODEL_BUCKET)
         files = [key['Key'] for key in s3.list_objects(Bucket = S3_MODEL_BUCKET)['Contents']]
         
-        userFileName = f'{userName}_{projectName}_image.json'
-        userModelFileName = f'{userName}_{projectName}_image.pt'
+        userFileName = f'{userName}_{projectName}_text.json'
+        userModelFileName = f'{userName}_{projectName}_text.pt'
+        tokenizerFileName = f'{userName}_{projectName}_text.pkl'
+        
         userProjectExists = False
         numClasses = 0
         classNames = []
@@ -80,14 +83,29 @@ def infer(event, context):
         predClassName = 'FAILED!!!'
 
 
-        if ((userFileName in files) and (userModelFileName in files)):
+        if ((userFileName in files) and (userModelFileName in files) and (tokenizerFileName in files)):
             userProjectExists = True
+
+            # Download Tokanizer file
+            tokenizerFilePath = '/tmp/' + tokenizerFileName
+
+            if os.path.exists(tokenizerFilePath):
+                os.remove(tokenizerFilePath) 
+
+            print('Downloading TokanizerFile: ',tokenizerFileName)
+            s3.download_file(S3_MODEL_BUCKET, tokenizerFileName,tokenizerFilePath)
+
+            print('Loading Tokanizer')
+            tokenizer_file = open(tokenizerFilePath, 'rb')
+            tokenizer = pickle.load(tokenizer_file)
+
             print(f'{userFileName} file found in S3:{S3_MODEL_BUCKET}')
             userFilePath = '/tmp/' + userFileName
 
             if os.path.exists(userFilePath):
                 os.remove(userFilePath) 
 
+            print('Downloading user file: ',userFileName)
             s3.download_file(S3_MODEL_BUCKET, userFileName,userFilePath)
             with open(userFilePath, "r") as inFile:
                 userProjectInfo = json.load(inFile)
@@ -103,13 +121,14 @@ def infer(event, context):
             print("get model: Creating Bytestream...")
             bytestream = io.BytesIO(obj['Body'].read())
             print("get model: Loading Model...")
-            model = torch.jit.load(bytestream)
+            model = torch.load(bytestream)
             print("Model Loaded...")
 
-            prediction = get_prediction(model=model,image_bytes=picture)
-            print('Id',prediction)
+            prediction = classify_text(input_text=input_text,model=model,tokenizer=tokenizer)
             predClassName = classNames[prediction]
-            print('Id',prediction,' Class:',predClassName)
+            print('Prediction: ',prediction)
+            print('Predicted Class: ',predClassName)
+            
 
         return {
             "statusCode": 200,
@@ -118,7 +137,7 @@ def infer(event, context):
                 'Access-Control-Allow-Origin': '*',
                 "Access-Control-Allow-Credentials": True
             },
-            "body": json.dumps({'predictedId': prediction,'predictedClass':predClassName,'numClasses':numClasses,'userProjectExists':userProjectExists })
+            "body": json.dumps({'prediction': prediction,'PredictedClass': predClassName,'userProjectExists':userProjectExists })
         }
     except Exception as e:
         print('classify_image',repr(e))

@@ -34,28 +34,29 @@ s3 = boto3.client('s3')
 def hello(event, context):
     try:
 
-        
-
         print('start')
         content_type_header = event['headers']['content-type']
         print('content_type_header',content_type_header)
         body = base64.b64decode(event["body"])
         print('Body loaded')
 
-        
+        # Read Username 0th element        
         userName = decoder.MultipartDecoder(body, content_type_header).parts[0].content.decode("utf-8")
         print("Username:",userName)
 
         projectName = decoder.MultipartDecoder(body, content_type_header).parts[1].content.decode("utf-8")
         print("Project Name:",projectName)
 
-        currentMode = decoder.MultipartDecoder(body, content_type_header).parts[2].content.decode("utf-8")
+        projectType = decoder.MultipartDecoder(body, content_type_header).parts[2].content.decode("utf-8")
+        print("Project Type:",projectType)
+
+        currentMode = decoder.MultipartDecoder(body, content_type_header).parts[3].content.decode("utf-8")
         print("Current Mode:",currentMode)
 
         if currentMode == 'userInfo':
             # Get all the files in 'gauravp-eva4-capstone-models' bucket
             files = [key['Key'] for key in s3.list_objects(Bucket = S3_MODEL_BUCKET)['Contents']]
-            userFileName = f'{userName}_{projectName}.json'
+            userFileName = f'{userName}_{projectName}_{projectType}.json'
             userProjectExists = False
             numClasses = 0
             classNames = []
@@ -88,18 +89,19 @@ def hello(event, context):
             }
 
 
-        numClasses = int(decoder.MultipartDecoder(body, content_type_header).parts[3].content.decode("utf-8"))
+        numClasses = int(decoder.MultipartDecoder(body, content_type_header).parts[4].content.decode("utf-8"))
         print("Number Of Classes", numClasses)
 
-        print("Fetching Deccoder Object")
+
+        print("Fetching Decoder Object")
         decoderObj = decoder.MultipartDecoder(body, content_type_header)
 
         count = 0
-        print("Files uploaded ")
+        #print("Files uploaded ")
         for part in decoderObj.parts:  
             print(part.headers[b'Content-Disposition'].decode())
 
-            if count < (4):  # first (3) objects are config parameters so ignore
+            if count < (5):  # first (4) objects are config parameters so ignore
                 print(count)
                 
                 count += 1
@@ -107,15 +109,15 @@ def hello(event, context):
             
             fileName = part.headers[b'Content-Disposition'].decode().split(';')[2].split('=')[1].strip('\"')
             className = part.headers[b'Content-Disposition'].decode().split(';')[1].split('=')[1].strip('\"')
-            print(f'File #{count}: {fileName} from {className}')
+            #print(f'File #{count}: {fileName} from {className}')
             count += 1
-            s3.put_object(Bucket=S3_BUCKET, Key=f'{userName}/{projectName}/train_data/{className}/{fileName}', Body=part.content)
+            s3.put_object(Bucket=S3_BUCKET, Key=f'{userName}/{projectName}/{projectType}/train_data/{className}/{fileName}', Body=part.content)
 
 
-        print(f'Number of Fields received = {count}')
+        print(f'Total Number of Fields received = {count}')
 
         print("Creating config file")
-        config_dict = { "userName":userName,"projectName":projectName}
+        config_dict = { "userName":userName,"projectName":projectName, "projectType":projectType}
 
         with open("/tmp/config.json", "w") as outfile:
             json.dump(config_dict, outfile)
@@ -135,7 +137,7 @@ def hello(event, context):
                 'Access-Control-Allow-Origin': '*',
                 "Access-Control-Allow-Credentials": True
             },
-            'body': json.dumps({'UserName':userName,'projectName':projectName, 'numClasses': numClasses,'numParts':count})
+            'body': json.dumps({'UserName':userName,'projectName':projectName, 'projectType':projectType,'numClasses': numClasses,'numParts':count})
         }
     except Exception as e:
         print('hello',repr(e))

@@ -1,0 +1,34 @@
+service: gp-eva-capstone-text-inference
+
+provider:
+  name: aws
+  runtime: python3.6
+  stage: dev
+  region: ap-south-1
+  timeout: 60
+  environment:
+    S3_MODEL_BUCKET: gauravp-eva4-capstone-models
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - "*"
+      Resource: arn:aws:s3:::gauravp-eva4-capstone-models/*
+    
+    - Action:
+        - "*"
+      Effect: Allow
+      Resource: "*"
+
+
+functions:
+  infer:
+    handler: handler.infer
+    memorySize: 3008
+    timeout: 60
+    events:
+      - http:
+          path: infer
+          method: post
+          cors: true
+    layers:
+      - arn:aws:lambda:ap-south-1:503625344141:layer:gp-torchtext-spacy-pytorch-layer:1
