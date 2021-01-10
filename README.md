@@ -12,7 +12,7 @@ Develop a [lobe.ai](https://lobe.ai/) clone:
 Click below image to head over to Final Submission Website.
 [![Capstone Final Submission](https://github.com/GauravPatel89/EVA4-Phase2-Capstone/blob/main/Figures/project_website_front.png)](http://gauravp-eva4-capstone-website.s3-website.ap-south-1.amazonaws.com/)
 
-### How to generate above video?
+### How to use above website?
 
 To generate output shown in above video, car needs to first learn to navigate the map. Car can then make use of this knowledge to navigate roads and hit the targets as shown in the video.
 
